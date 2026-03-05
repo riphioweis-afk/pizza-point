@@ -1,13 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kitchen View</title>
-</head>
-<body>
-    <h1>Kitchen View</h1>
-    <p>This is the kitchen view where orders will be displayed.</p>
-    
-</body>
-</html>
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .kitchen-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .kitchen-header h2 { font-size: 22px; font-weight: 700; }
+  .kitchen-header .count {
+    background: #140908;
+    color: white;
+    padding: 4px 15px;
+    border-radius: 200px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .kitchen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .order-card {
+    background: rgb(195, 6, 6);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    border-top: 5px solid #c0392b;
+  }
+
+  .order-card-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .order-card-header .order-id { font-size: 18px; font-weight: 800; color: #333; }
+  .order-card-header .order-time { font-size: 12px; color: #aaa; }
+  .order-card-header .table { font-size: 12px; background: #f0f0f0; padding: 3px 8px; border-radius: 4px; color: #555; }
+
+  .order-card-items { padding: 12px 16px; }
+  .order-card-items li {
+    font-size: 14px;
+    padding: 5px 0;
+    border-bottom: 1px dashed #f0f0f0;
+    list-style: none;
+    display: flex;
+    gap: 8px;
+  }
+  .order-card-items li .qty {
+    background: #333;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .order-card-notes {
+    padding: 8px 16px;
+    background: #fffbea;
+    font-size: 13px;
+    color: #888;
+    border-top: 1px solid #f5f0d0;
+  }
+  .order-card-notes span { color: #e67e22; font-weight: 600; }
+
+  .order-card-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #f0f0f0;
+  }
+  .order-card-footer form button {
+    width: 100%;
+    background: #27ae60;
+    color: white;
+    padding: 10px 0;
+    font-size: 14px;
+    border-radius: 5px;
+  }
+  .order-card-footer form button:hover { background: #219150; }
+
+  .empty-kitchen {
+    text-align: center;
+    padding: 80px 20px;
+    color: #aaa;
+  }
+  .empty-kitchen p:first-child { font-size: 48px; margin-bottom: 12px; }
+  .empty-kitchen p { font-size: 16px; }
+
+  /* Auto-refresh indicator */
+  .refresh-bar {
+    font-size: 12px;
+    color: #aaa;
+    text-align: right;
+    margin-bottom: 10px;
+  }
+</style>
+
+<div class="kitchen-header">
+  <h2>Kitchen Display</h2>
+  <div style="display:flex; align-items:center; gap:12px;">
+    {% if orders %}
+      <span class="count">{{ orders|length }} order{{ orders|length|pluralize }} waiting</span>
+    {% endif %}
+    <a href="{% url 'kitchen' %}" style="font-size:13px; color:#888; text-decoration:none;">🔄 Refresh</a>
+  </div>
+</div>
+
+<div class="refresh-bar">Auto-refresh: <a href="" style="color:#c0392b;" onclick="location.reload(); return false;">refresh now</a></div>
+
+{% if orders %}
+  <div class="kitchen-grid">
+    {% for order in orders %}
+      <div class="order-card">
+        <div class="order-card-header">
+          <span class="order-id">#{{ order.id }}</span>
+          <span class="table">{{ order.table_number }}</span>
+          <span class="order-time">{{ order.created_at|timesince }} ago</span>
+        </div>
+
+        <ul class="order-card-items">
+          {% for item in order.items.all %}
+            <li>
+              <span class="qty">{{ item.quantity }}x</span>
+              <span>{{ item.menu_item.name }}{% if item.notes %} <em style="color:#aaa; font-size:12px;">({{ item.notes }})</em>{% endif %}</span>
+            </li>
+          {% endfor %}
+        </ul>
+
+        {% if order.notes %}
+          <div class="order-card-notes">
+            <span>Note:</span> {{ order.notes }}
+          </div>
+        {% endif %}
+
+        <div class="order-card-footer">
+          <form method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="mark_done">
+            <input type="hidden" name="order_id" value="{{ order.id }}">
+            <button type="submit">✓ Mark as Done</button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="empty-kitchen">
+    <p>🍕</p>
+    <p>No orders in the kitchen right now go make me some money.</p>
+    <p style="margin-top:8px; font-size:14px;"><a href="{% url 'order' %}" style="color:#c0392b;">Take an order →</a></p>
+  </div>
+{% endif %}
+
+{% endblock %}

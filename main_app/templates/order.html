@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+  .pos-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 20px;
+    height: calc(100vh - 110px);
+  }
+
+  /* ---- MENU PANEL ---- */
+  .menu-panel {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .menu-panel h2 {
+    padding: 14px 18px;
+    font-size: 16px;
+    border-bottom: 1px solid #eee;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .menu-body { overflow-y: auto; padding: 16px; flex: 1; }
+
+  .category-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #aaa;
+    margin: 16px 0 8px;
+  }
+  .category-label:first-child { margin-top: 0; }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+  }
+
+  .menu-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fafafa;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .menu-item .item-name { font-weight: 600; font-size: 14px; }
+  .menu-item .item-price { color: #c0392b; font-size: 13px; font-weight: 700; }
+  .menu-item form { margin-top: 8px; }
+  .menu-item button {
+    width: 100%;
+    background: #c0392b;
+    color: white;
+    padding: 6px 0;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .menu-item button:hover { background: #a93226; }
+
+  /* ---- ORDER PANEL ---- */
+  .order-panel {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .order-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid #eee;
+    font-size: 16px;
+    font-weight: 700;
+    color: #333;
+  }
+  .order-items { flex: 1; overflow-y: auto; padding: 12px 16px; }
+
+  .order-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    gap: 8px;
+  }
+  .order-item .item-info { flex: 1; }
+  .order-item .item-info .name { font-size: 14px; font-weight: 600; }
+  .order-item .item-info .qty  { font-size: 12px; color: #888; }
+  .order-item .item-price { font-size: 14px; font-weight: 700; color: #c0392b; }
+  .order-item form button {
+    background: none;
+    color: #ccc;
+    font-size: 16px;
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .order-item form button:hover { color: #e74c3c; }
+
+  .empty-order {
+    text-align: center;
+    color: #bbb;
+    margin-top: 40px;
+    font-size: 14px;
+  }
+
+  .order-footer {
+    border-top: 2px solid #eee;
+    padding: 14px 16px;
+  }
+  .order-total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .order-notes textarea {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    font-size: 13px;
+    resize: none;
+    height: 56px;
+    margin-bottom: 10px;
+    font-family: inherit;
+    color: #555;
+  }
+  .order-actions { display: flex; gap: 8px; }
+  .order-actions form { flex: 1; }
+  .order-actions button { width: 100%; padding: 10px 0; }
+</style>
+
+<div class="pos-layout">
+
+  <!-- MENU -->
+  <div class="menu-panel">
+    <h2>Pizza Menu</h2>
+    <div class="menu-body">
+      {% for category, items in categories.items %}
+        <div class="category-label">{{ category }}</div>
+        <div class="menu-grid">
+          {% for item in items %}
+            <div class="menu-item">
+              <span class="item-name">{{ item.name }}</span>
+              <span class="item-price">${{ item.price }}</span>
+              <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_item">
+                <input type="hidden" name="menu_item_id" value="{{ item.id }}">
+                <button type="submit">+ Add</button>
+              </form>
+            </div>
+          {% endfor %}
+        </div>
+      {% empty %}
+        <p style="color:#aaa; margin-top:20px;">No menu items yet. <a href="/admin/">Add some in Admin →</a></p>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- ORDER SUMMARY -->
+  <div class="order-panel">
+    <div class="order-header">Order #{{ order.id }}</div>
+
+    <div class="order-items">
+      {% if order_items %}
+        {% for item in order_items %}
+          <div class="order-item">
+            <div class="item-info">
+              <div class="name">{{ item.menu_item.name }}</div>
+              <div class="qty">x{{ item.quantity }} &nbsp; ${{ item.menu_item.price }} each</div>
+            </div>
+            <div class="item-price">${{ item.subtotal }}</div>
+            <form method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="remove_item">
+              <input type="hidden" name="item_id" value="{{ item.id }}">
+              <button type="submit" title="Remove">✕</button>
+            </form>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-order">
+          <p>🍕</p>
+          <p>No items yet.</p>
+          
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="order-footer">
+      <div class="order-total">
+        <span>Total</span>
+        <span>${{ total }}</span>
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="send_to_kitchen">
+        <div class="order-notes">
+          <textarea name="kitchen_notes" placeholder="Kitchen notes (optional)...">{{ order.notes }}</textarea>
+        </div>
+        <div class="order-actions">
+          <button type="submit" class="btn-red" {% if not order_items %}disabled style="opacity:0.4"{% endif %}>
+            PLACE ORDER
+          </button>
+        </div>
+      </form>
+
+      <div class="order-actions" style="margin-top: 8px;">
+        <form method="POST" style="flex:1">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="clear_order">
+          <button type="submit" class="btn-gray" style="width:100%">DELETE ORDER</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

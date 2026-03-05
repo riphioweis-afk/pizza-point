@@ -1,31 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" type="image/png" href="" />
-    <title>PIZZA POINT</title>
-    {% block head %} 
-    {% endblock %}
-  </head>
-  <body>
-    <header>
-      <div class="header-logo-container">
-        <a href="/">
-          <img src="" alt="The pizza Shop" />
-        </a>
-      </div>
-      <nav>
-        <ul>
-            <li><a href="/">Home</a></li>
-          <li><a href="/kitchen">Kitchen</a></li>
-        </ul>
-      </nav>
-    </header>
-    <main>
-     {% block content %} 
-     {% endblock %}
-     </main>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍕 Pizza Point POS</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f0f0; color: #222; }
+
+    nav {
+      background: #c0392b;
+      color: white;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    nav h1 { font-size: 20px; font-weight: 700; }
+    nav a {
+      color: white;
+      text-decoration: none;
+      background: rgba(255,255,255,0.2);
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 14px;
+      margin-left: 8px;
+    }
+    nav a:hover { background: rgba(255,255,255,0.35); }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+    button {
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 16px;
+    }
+    .btn-red    { background: #c0392b; color: white; }
+    .btn-green  { background: #27ae60; color: white; }
+    .btn-dark   { background: #333; color: white; }
+    .btn-gray   { background: #ddd; color: #333; }
+    .btn-red:hover   { background: #a93226; }
+    .btn-green:hover { background: #219150; }
+    .btn-dark:hover  { background: #555; }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>🍕 Pizza Point POS</h1>
+    <div>
+      <a href="{% url 'order' %}"> New Order</a>
+      <a href="{% url 'kitchen' %}">Kitchen</a>
+    </div>
+  </nav>
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+</body>
 </html>
