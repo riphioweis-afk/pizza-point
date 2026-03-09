@@ -95,7 +95,7 @@ else:
     DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pizza_db',
+        'NAME': 'pizza',
         'USER': 'postgres',
         'PASSWORD': '2324',
     }
