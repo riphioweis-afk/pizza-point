@@ -3,7 +3,7 @@
 ![logo](images/logo.png)
 
 ##  
-[Launch App](https://pit-lane-fcc38f168921.herokuapp.com/)
+[Launch App](https://pizza-poin-e35c51af1aa9.herokuapp.com/)
 
 ---
 
