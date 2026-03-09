@@ -94,8 +94,10 @@ if "ON_HEROKU" in os.environ:
 else:
     DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pizza_db',
+        'USER': 'postgres',
+        'PASSWORD': '2324',
     }
 }
 
