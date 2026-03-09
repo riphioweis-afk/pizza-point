@@ -25,6 +25,7 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
     table_number = models.CharField(max_length=20, blank=True, default='Walk-in')
     notes = models.TextField(blank=True)
+    rush = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Order #{self.id} — {self.status}"

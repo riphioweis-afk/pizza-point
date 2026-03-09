@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🍕 Pizza Point — Clock In</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+      width: 100%;
+      max-width: 400px;
+      padding: 24px;
+    }
+
+    .logo {
+      text-align: center;
+    }
+    .logo .pizza-icon {
+      font-size: 64px;
+      display: block;
+      margin-bottom: 12px;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .logo h1 {
+      color: white;
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .logo p {
+      color: #888;
+      font-size: 14px;
+      margin-top: 4px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    .card h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 6px;
+    }
+    .card p {
+      font-size: 13px;
+      color: #aaa;
+      margin-bottom: 24px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .field input {
+      width: 100%;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-family: inherit;
+      color: #222;
+      transition: border-color 0.15s;
+      outline: none;
+    }
+    .field input:focus {
+      border-color: #c0392b;
+    }
+
+    .error {
+      background: #fdf0f0;
+      border: 1px solid #f5c6c6;
+      color: #c0392b;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: #c0392b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 0;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.15s;
+    }
+    .submit-btn:hover { background: #a93226; }
+
+    .footer-note {
+      color: #555;
+      font-size: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-wrapper">
+
+    <div class="logo">
+      <span class="pizza-icon">🍕</span>
+      <h1>Pizza Point</h1>
+        <p>Staff Clock In</p>
+    </div>
+
+    <div class="card">
+      <h2>Clock In</h2>
+
+      {% if error %}
+        <div class="error">⚠ {{ error }}</div>
+      {% endif %}
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="field">
+          <label>Username</label>
+          <input type="text" name="username" placeholder="e.g. alex" autofocus required>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="submit-btn">Clock In →</button>
+      </form>
+    </div>
+
+    <div class="footer-note">Pizza Point POS &nbsp;·&nbsp; HARD WORKING Staff Only</div>
+
+  </div>
+
+</body>
+</html>

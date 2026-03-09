@@ -9,8 +9,8 @@
     body { font-family: 'Segoe UI', sans-serif; background: #f0f0f0; color: #222; }
 
     nav {
-      background: #c0392b;
-      color: white;
+      background: #3f3837;
+      color: rgb(201, 57, 57);
       padding: 12px 24px;
       display: flex;
       align-items: center;
@@ -20,7 +20,7 @@
     nav a {
       color: white;
       text-decoration: none;
-      background: rgba(255,255,255,0.2);
+      background: rgba(225, 6, 6, 0.552);
       padding: 6px 14px;
       border-radius: 4px;
       font-size: 14px;
@@ -28,7 +28,7 @@
     }
     nav a:hover { background: rgba(255,255,255,0.35); }
 
-    .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
     button {
       cursor: pointer;
@@ -38,21 +38,29 @@
       font-weight: 600;
       padding: 8px 16px;
     }
-    .btn-red    { background: #c0392b; color: white; }
+    .btn-red    { background: #a93226; color: white; }
     .btn-green  { background: #27ae60; color: white; }
     .btn-dark   { background: #333; color: white; }
-    .btn-gray   { background: #ddd; color: #333; }
-    .btn-red:hover   { background: #a93226; }
+    .btn-gray   { background: #ddd; color: #0e0d0d; }
+    .btn-red:hover   { background: #3f3837; }
     .btn-green:hover { background: #219150; }
     .btn-dark:hover  { background: #555; }
   </style>
 </head>
 <body>
   <nav>
-    <h1>🍕 Pizza Point POS</h1>
-    <div>
+    <h3><a href="{% url 'secret' %}" style="text-decoration:none;">🍕</a> Pizza Point POS</h3>    <div>
       <a href="{% url 'order' %}"> New Order</a>
       <a href="{% url 'kitchen' %}">Kitchen</a>
+     </div>
+    <div class="nav-right">
+      {% if user.is_authenticated %}
+        <span class="staff-badge">👤 {{ user.get_full_name|default:user.username }}</span>
+        <form class="clock-out-form" method="POST" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit">Clock Out</button>
+        </form>
+      {% endif %}
     </div>
   </nav>
   <div class="container">
